@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-""" Fetch Apache stats via mod_status and send to Zabbix 
+""" Fetch Apache stats via mod_status and send to Zabbix
 By Paulson McIntyre
-Patches by: 
+Patches by:
 Zach Bailey <znbailey@gmail.com>
 Dale Bewley <dale@bewley.net>
 
@@ -55,9 +55,9 @@ def zbx_fail(err):
 
 def fetchURL(url, user = None, passwd = None):
     """ Return the data from a URL """
-    
+
     request = urllib2.Request(url)
-    
+
     if user and passwd:
         base64string = base64.encodestring('%s:%s' % (user, passwd)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -176,7 +176,7 @@ def parse(data, version):
                 ret2[clean(key, replace)] = val
         else:
             ret2[clean(key, replace)] = val
-            
+
     return ret2
 
 def get_opts():
@@ -306,7 +306,7 @@ License: GPLv2
 
     return opts, args
 
-def main():    
+def main():
     opts, args = get_opts()
 
     result = 0
@@ -315,7 +315,7 @@ def main():
         server_status = fetchURL(opts.url, user = opts.user, passwd = opts.passwd)
     except Exception as e:
         zbx_fail('failed to read server-status: %s' % e)
-    
+
     try:
         data = parse( data = server_status, version = opts.statusvers )
     except Exception as e:

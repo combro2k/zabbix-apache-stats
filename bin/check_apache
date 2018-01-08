@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """ Fetch Apache stats via mod_status and send to Zabbix
 By Paulson McIntyre
@@ -332,9 +332,10 @@ def main():
 
         try:
             result = zabbix_sender(
-                payload     = payload, 
-                agentconfig = opts.agentconfig, 
-                senderloc   = opts.senderloc )
+                payload     = payload,
+                agentconfig = opts.agentconfig,
+                senderloc   = opts.senderloc
+            )
         except Exception as e:
             zbx_fail('failed to send parsed data: %s' % e)
         else:

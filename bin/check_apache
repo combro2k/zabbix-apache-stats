@@ -325,9 +325,37 @@ def main():
 
     payload = ""
 
+    """ To fix issues with newer zabbix versions use only these keys
+    """
+    validkeys = [
+            'BytesPerReq',
+            'BytesPerSec',
+            'CPULoad',
+            'ReqPerSec',
+            'TotalAccesses',
+            'TotalkBytes',
+            'Uptime',
+            'BusyWorkers',
+            'Closingconnection',
+            'DNSLookup',
+            'Gracefullyfinishing',
+            'IdleWorkers',
+            'Idlecleanupofworker',
+            'Keepaliveread',
+            'Logging',
+            'Openslotwithnocurrentprocess',
+            'ReadingRequest',
+            'SendingReply',
+            'Startingup',
+            'WaitingforConnection',
+    ]
+
     if opts.agentconfig:
         # agent check; assume hostname from zabbix agent config
         for key, val in data.items():
+            if not key in validkeys:
+                continue
+
             payload += "-\tapache[%s]\t%s\n" % (key, val)
 
         try:
@@ -345,14 +373,18 @@ def main():
     else:
         # cron or remote check; hostname may be distinct from host running the check
         for key, val in data.items():
+            if not key in validkeys:
+                continue
+
             payload += "%s apache[%s] %s\n" % (opts.zabbixsource, key, val)
 
         try:
             result = zabbix_sender(
-                payload      = payload, 
-                zabbixserver = opts.zabbixserver, 
-                zabbixport   = opts.zabbixport, 
+                payload      = payload,
+                zabbixserver = opts.zabbixserver,
+                zabbixport   = opts.zabbixport,
                 senderloc    = opts.senderloc )
+
         except Exception as e:
             zbx_fail('failed to send parsed data: %s' % e)
 

@@ -130,7 +130,7 @@ def parse(data, version):
         ".":"Open slot with no current process",
         }
     # Handle post-2.4.13 status format
-    if version == '2.4.13':
+    if version >= '2.4.13':
         # First remove server name on first line
         data = data.splitlines(False)
         data = data[1:]

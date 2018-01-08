@@ -143,6 +143,8 @@ def parse(data, version):
                 continue
             if l.startswith('RestartTime'):
                 continue
+            if l.startswith('TLSSessionCacheStatus'):
+                continue
             lines.append(l)
         data = "\n".join(lines)
     # Clean out certain chars

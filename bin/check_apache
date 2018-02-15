@@ -43,7 +43,7 @@ def setLogLevel(loglevel):
     logger.setLevel(numeric_loglevel)
 
     log_handler = logging.handlers.SysLogHandler( address = '/dev/log' )
-    #log_handler = logging.StreamHandler(sys.stdout)
+    log_handler = logging.StreamHandler(sys.stdout)
     logger.addHandler( log_handler )
 
     return logger
@@ -221,6 +221,15 @@ License: GPLv2
                       help = "Port to connect on. [default: %default]",
                       )
     parser.add_option(
+                      "-t",
+                      "--path",
+                      action = "store",
+                      type = "string",
+                      dest = "path",
+                      default = "/server-status",
+                      help = "path to connect on. [default: %default]",
+                      )
+    parser.add_option(
                       "-r",
                       "--proto",
                       action = "store",
@@ -304,7 +313,7 @@ License: GPLv2
     if opts.url and (opts.port != 80 or opts.proto != "http"):
         parser.error("Can't specify -u with  -p or -r")
     if not opts.url:
-        opts.url = "%s://%s:%s/server-status?auto" % (opts.proto, opts.host, opts.port)
+        opts.url = "%s://%s:%s/%s?auto" % (opts.proto, opts.host, opts.port, opts.path)
 
     return opts, args
 

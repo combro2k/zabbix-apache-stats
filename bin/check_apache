@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 import urllib2, base64
-from optparse import OptionParser
+from argparse import ArgumentParser
 import os
 import StringIO
 import csv
@@ -186,9 +186,9 @@ def parse(data, version):
     return ret2
 
 def get_opts():
-    parser = OptionParser(
-        usage = "%prog [-z <Zabbix hostname or IP>] [-o <Apache hostname or IP>]",
-        version = "%prog version v0.2",
+    parser = ArgumentParser(
+        #        usage = "%prog [-z <Zabbix hostname or IP>] [-o <Apache hostname or IP>]",
+        version = "%(prog)s version v0.2",
         prog = os.path.basename(__file__),
         description = """This program gathers data from Apache's 
 built-in status page and sends it to 
@@ -197,150 +197,140 @@ Author: Paulson McIntyre (GpMidi)
 License: GPLv2
                         """,
     )
-    parser.add_option(
-        "-v",
+    parser.add_argument(
+        "-V",
         "--verbose",
         action = "store_true",
         dest = "verbose",
         default = False,
-        help = "print to stderr. [default: %default]",
+        help = "output verbosity",
     )
-    parser.add_option(
-        "-d",
+    parser.add_argument(
+        "-D",
         "--debug",
         action = "store_true",
         dest = "debug",
         default = False,
-        help = "print debug information. [default: %default]",
+        help = "print debug information. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-o",
         "--host",
         action = "store",
-        type = "string",
         dest = "host",
         default = "127.0.0.1",
-        help = "host to connect to. [default: %default]",
+        help = "host to connect to. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-p",
         "--port",
         action = "store",
-        type = "int",
+        type = int,
         dest = "port",
         default = 80,
-        help = "port to connect on. [default: %default]",
+        help = "port to connect on. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-t",
         "--path",
         action = "store",
-        type = "string",
         dest = "path",
         default = "server-status",
-        help = "path to connect on. [default: %default]",
+        help = "path to connect on. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-r",
         "--proto",
         action = "store",
-        type = "string",
         dest = "proto",
         default = "http",
-        help = "protocol to connect on: http or https. [default: %default]",
+        help = "protocol to connect on: http or https. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-z",
         "--zabbixserver",
         action = "store",
-        type = "string",
+        #        type = "string",
         dest = "zabbixserver",
         default = "localhost",
         help = "zabbix trapper hostname",
     )
-    parser.add_option(
+    parser.add_argument(
         "-u",
         "--user",
         action = "store",
-        type = "string",
         dest = "user",
         default = None,
-        help = "HTTP authentication user to use when connection. [default: %default]",
+        help = "HTTP authentication user to use when connection. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-a",
         "--passwd",
         action = "store",
-        type = "string",
         dest = "passwd",
         default = None,
-        help = "HTTP authentication password to use when connecting. [default: %default]",
+        help = "HTTP authentication password to use when connecting. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-s",
         "--sender",
         action = "store",
-        type = "string",
         dest = "senderloc",
         default = "/usr/bin/zabbix_sender",
-        help = "location to the zabbix_sender executable. [default: %default]",
+        help = "location to the zabbix_sender executable. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-q",
         "--zabbixport",
         action = "store",
-        type = "int",
+        type = int,
         dest = "zabbixport",
         default = 10051,
-        help = "zabbix port to connect to. [default: %default]",
+        help = "zabbix port to connect to. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-c",
         "--zabbixsource",
         action = "store",
-        type = "string",
         dest = "zabbixsource",
         default = "localhost",
-        help = "zabbix host to use when sending values. [default: %default]",
+        help = "zabbix host to use when sending values. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "--config",
         action = "store",
-        type = "string",
         dest = "agentconfig",
         default = None,
-        help = "zabbix agent config to derive Hostname and ServerActive from. [default: %default]",
+        help = "zabbix agent config to derive Hostname and ServerActive from. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "--status-version",
         action = "store",
-        type = "choice",
         choices = ["default", "2.4.13"],
         dest = "statusvers",
         default = "default",
-        help = "version of the Apache status to parse, `default' or `2.4.13' since status output changed with Apache 2.4.13. [default: %default]",
+        help = "version of the Apache status to parse, `default' or `2.4.13' since status output changed with Apache 2.4.13. (default: %(default)s)",
     )
-    parser.add_option(
+    parser.add_argument(
         "-l",
         "--url",
         action = "store",
-        type = "string",
         dest = "url",
         default = None,
         help = "override the automatically generated URL with one of your own",
     )
 
-    (opts, args) = parser.parse_args()
+    opts = parser.parse_args()
 
     if opts.url and (opts.port != 80 or opts.proto != "http"):
         parser.error("Can't specify -u with  -p or -r")
     if not opts.url:
         opts.url = "%s://%s:%s/%s?auto" % (opts.proto, opts.host, opts.port, opts.path)
 
-    return opts, args
+    return opts
 
 def main():
-    opts, args = get_opts()
+    opts = get_opts()
 
     if opts.verbose:
         log_handler = logging.StreamHandler(sys.stderr)

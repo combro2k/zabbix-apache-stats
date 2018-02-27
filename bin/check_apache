@@ -187,7 +187,7 @@ def parse(data, version):
 def get_opts():
     parser = OptionParser(
         usage = "%prog [-z <Zabbix hostname or IP>] [-o <Apache hostname or IP>]",
-        version = "%prog v0.1",
+        version = "%prog version v0.2",
         prog = os.path.basename(__file__),
         description = """This program gathers data from Apache's 
 built-in status page and sends it to 

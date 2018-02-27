@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
 import urllib2, base64
-from argparse import ArgumentParser
+from argparse import ArgumentParser as Parser
 import os
 import StringIO
 import csv
@@ -184,9 +184,8 @@ def parse(data, version):
             ret2[clean(key, replace)] = val
 
     return ret2
-
 def get_opts():
-    parser = ArgumentParser(
+    parser = Parser(
         #        usage = "%prog [-z <Zabbix hostname or IP>] [-o <Apache hostname or IP>]",
         version = "%(prog)s version v0.2",
         prog = os.path.basename(__file__),
@@ -197,6 +196,7 @@ Author: Paulson McIntyre (GpMidi)
 License: GPLv2
                         """,
     )
+
     parser.add_argument(
         "-V",
         "--verbose",

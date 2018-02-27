@@ -187,7 +187,7 @@ def parse(data, version):
 def get_opts():
     parser = OptionParser(
         usage = "%prog [-z <Zabbix hostname or IP>] [-o <Apache hostname or IP>]",
-        version = "%prog $Revision: 173 $",
+        version = "%prog v0.1",
         prog = os.path.basename(__file__),
         description = """This program gathers data from Apache's 
 built-in status page and sends it to 
@@ -202,7 +202,7 @@ License: GPLv2
         action = "store_true",
         dest = "verbose",
         default = False,
-        help = "Print to stderr. [default: %default]",
+        help = "print to stderr. [default: %default]",
     )
     parser.add_option(
         "-d",
@@ -210,16 +210,7 @@ License: GPLv2
         action = "store_true",
         dest = "debug",
         default = False,
-        help = "Print debug information. [default: %default]",
-    )
-    parser.add_option(
-        "-l",
-        "--url",
-        action = "store",
-        type = "string",
-        dest = "url",
-        default = None,
-        help = "Override the automatically generated URL with one of your own",
+        help = "print debug information. [default: %default]",
     )
     parser.add_option(
         "-o",
@@ -228,7 +219,7 @@ License: GPLv2
         type = "string",
         dest = "host",
         default = "127.0.0.1",
-        help = "Host to connect to. [default: %default]",
+        help = "host to connect to. [default: %default]",
     )
     parser.add_option(
         "-p",
@@ -237,7 +228,7 @@ License: GPLv2
         type = "int",
         dest = "port",
         default = 80,
-        help = "Port to connect on. [default: %default]",
+        help = "port to connect on. [default: %default]",
     )
     parser.add_option(
         "-t",
@@ -255,7 +246,7 @@ License: GPLv2
         type = "string",
         dest = "proto",
         default = "http",
-        help = "Protocol to connect on. Can be http or https. [default: %default]",
+        help = "protocol to connect on: http or https. [default: %default]",
     )
     parser.add_option(
         "-z",
@@ -264,6 +255,7 @@ License: GPLv2
         type = "string",
         dest = "zabbixserver",
         default = "localhost",
+        help = "zabbix trapper hostname",
     )
     parser.add_option(
         "-u",
@@ -272,7 +264,7 @@ License: GPLv2
         type = "string",
         dest = "user",
         default = None,
-        help = "HTTP authentication user to use when connection. [default: None]",
+        help = "HTTP authentication user to use when connection. [default: %default]",
     )
     parser.add_option(
         "-a",
@@ -281,7 +273,7 @@ License: GPLv2
         type = "string",
         dest = "passwd",
         default = None,
-        help = "HTTP authentication password to use when connecting. [default: None]",
+        help = "HTTP authentication password to use when connecting. [default: %default]",
     )
     parser.add_option(
         "-s",
@@ -290,7 +282,7 @@ License: GPLv2
         type = "string",
         dest = "senderloc",
         default = "/usr/bin/zabbix_sender",
-        help = "Location to the zabbix_sender executable. [default: %default]",
+        help = "location to the zabbix_sender executable. [default: %default]",
     )
     parser.add_option(
         "-q",
@@ -299,7 +291,7 @@ License: GPLv2
         type = "int",
         dest = "zabbixport",
         default = 10051,
-        help = "Zabbix port to connect to. [default: %default]",
+        help = "zabbix port to connect to. [default: %default]",
     )
     parser.add_option(
         "-c",
@@ -308,7 +300,7 @@ License: GPLv2
         type = "string",
         dest = "zabbixsource",
         default = "localhost",
-        help = "Zabbix host to use when sending values. [default: %default]",
+        help = "zabbix host to use when sending values. [default: %default]",
     )
     parser.add_option(
         "--config",
@@ -316,7 +308,7 @@ License: GPLv2
         type = "string",
         dest = "agentconfig",
         default = None,
-        help = "Zabbix agent config to derive Hostname and ServerActive from. [default: %default]",
+        help = "zabbix agent config to derive Hostname and ServerActive from. [default: %default]",
     )
     parser.add_option(
         "--status-version",
@@ -325,7 +317,16 @@ License: GPLv2
         choices = ["default", "2.4.13"],
         dest = "statusvers",
         default = "default",
-        help = "Version of the Apache status to parse. Must be `default' or `2.4.13' since status output changed with Apache 2.4.13. [default: %default]",
+        help = "version of the Apache status to parse, `default' or `2.4.13' since status output changed with Apache 2.4.13. [default: %default]",
+    )
+    parser.add_option(
+        "-l",
+        "--url",
+        action = "store",
+        type = "string",
+        dest = "url",
+        default = None,
+        help = "override the automatically generated URL with one of your own",
     )
 
     (opts, args) = parser.parse_args()

@@ -350,7 +350,7 @@ def main():
         setLogLevel('debug')
 
     logger.addHandler(log_handler)
-   
+
     result = 0
 
     try:

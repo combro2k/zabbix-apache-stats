@@ -22,7 +22,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
-import urllib2, base64
+import urllib2, base64, ssl
 from argparse import ArgumentParser as Parser
 import os
 import StringIO
@@ -51,7 +51,7 @@ def zbx_fail(err):
     print "ZBX_NOTSUPPORTED"
     sys.exit(1)
 
-def fetchURL(url, user = None, passwd = None):
+def fetchURL(url, user = None, passwd = None, insecure = False):
     """ Return the data from a URL """
 
     request = urllib2.Request(url)
@@ -61,7 +61,11 @@ def fetchURL(url, user = None, passwd = None):
         request.add_header("Authorization", "Basic %s" % base64string)
 
     try:
-        conn = urllib2.urlopen(request)
+        if insecure:
+            context = ssl._create_unverified_context()
+            conn = urllib2.urlopen(request, context=context)
+        else:
+            conn = urllib2.urlopen(request)
         data = conn.read()
         conn.close()
     except:
@@ -186,7 +190,6 @@ def parse(data, version):
     return ret2
 def get_opts():
     parser = Parser(
-        #        usage = "%prog [-z <Zabbix hostname or IP>] [-o <Apache hostname or IP>]",
         version = "%(prog)s version v0.3",
         prog = os.path.basename(__file__),
         description = """This program gathers data from Apache's 
@@ -196,7 +199,6 @@ Author: Paulson McIntyre (GpMidi)
 License: GPLv2
                         """,
     )
-
     parser.add_argument(
         "-V",
         "--verbose",
@@ -246,11 +248,11 @@ License: GPLv2
         default = "http",
         help = "protocol to connect on: http or https. (default: %(default)s)",
     )
+
     parser.add_argument(
         "-z",
         "--zabbixserver",
         action = "store",
-        #        type = "string",
         dest = "zabbixserver",
         default = "localhost",
         help = "zabbix trapper hostname",
@@ -320,12 +322,25 @@ License: GPLv2
         help = "override the automatically generated URL with one of your own",
     )
 
+    if sys.version_info[0] == 2 and sys.version_info[1] >= 7 and sys.version_info[2] >= 9:
+        parser.add_argument(
+            "-k",
+            "--insecure",
+            action = "store_true",
+            dest = "insecure",
+            default = False,
+            help = "allow to use insecure certificate. (default: %(default)s)",
+        )
+
     opts = parser.parse_args()
 
     if opts.url and (opts.port != 80 or opts.proto != "http"):
         parser.error("Can't specify -u with  -p or -r")
     if not opts.url:
         opts.url = "%s://%s:%s/%s?auto" % (opts.proto, opts.host, opts.port, opts.path)
+
+    if not hasattr(opts, 'insecure'):
+        opts.insecure = False
 
     return opts
 
@@ -344,8 +359,11 @@ def main():
 
     result = 0
 
+    logger.debug("Given parameters: %s" % opts)
+    logger.debug("Running at python version: %s" % sys.version)
+
     try:
-        server_status = fetchURL(opts.url, user = opts.user, passwd = opts.passwd)
+        server_status = fetchURL(opts.url, user = opts.user, passwd = opts.passwd, insecure = opts.insecure)
     except Exception as e:
         zbx_fail('failed to read server-status: %s' % e)
 
